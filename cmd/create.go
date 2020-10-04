@@ -42,7 +42,6 @@ var createCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("create app")
 		if res, err := http.Get(fmt.Sprintf("https://jsonplaceholder.typicode.com/todos/%v", args[0])); err != nil {
 			fmt.Println(err)
 		} else {
@@ -53,9 +52,7 @@ var createCmd = &cobra.Command{
 }
 
 var (
-	appName             string
-	mainDartContent     []byte
-	mainDartPageContent []byte
+	appName string
 )
 
 func check(e error) {
@@ -80,7 +77,7 @@ func createTDDStructure() {
 }
 
 func writeDartFiles() {
-	mainDartContent =
+	mainDartContent :=
 		[]byte(`import 'package:flutter/material.dart';
 	import 'package:` + appName + `/features/presentation/ui/screens/main_page.dart';
 	
@@ -100,7 +97,7 @@ func writeDartFiles() {
 		}
 	}`)
 
-	mainDartPageContent =
+	mainDartPageContent :=
 		[]byte(`import 'package:flutter/material.dart';
 	class MainPage extends StatelessWidget {
 		@override
@@ -115,11 +112,46 @@ func writeDartFiles() {
 		}
 	}`)
 
+	widgetTestDartContent :=
+		[]byte(`// This is a basic Flutter widget test.
+		//
+		// To perform an interaction with a widget in your test, use the WidgetTester
+		// utility that Flutter provides. For example, you can send tap and scroll
+		// gestures. You can also use WidgetTester to find child widgets in the widget
+		// tree, read text, and verify that the values of widget properties are correct.
+		
+		import 'package:flutter/material.dart';
+		import 'package:flutter_test/flutter_test.dart';
+		
+		import 'package:` + appName + `/main.dart';
+		
+		void main() {
+		  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+			// Build our app and trigger a frame.
+			await tester.pumpWidget(App());
+		
+			// Verify that our counter starts at 0.
+			expect(find.text('0'), findsOneWidget);
+			expect(find.text('1'), findsNothing);
+		
+			// Tap the '+' icon and trigger a frame.
+			await tester.tap(find.byIcon(Icons.add));
+			await tester.pump();
+		
+			// Verify that our counter has incremented.
+			expect(find.text('0'), findsNothing);
+			expect(find.text('1'), findsOneWidget);
+		  });
+		}
+		`)
+
 	_, err := os.Create("features/presentation/ui/screens/main_page.dart")
 	check(err)
 
 	passCodeToFile("main.dart", mainDartContent)
 	passCodeToFile("features/presentation/ui/screens/main_page.dart", mainDartPageContent)
+	os.Chdir("..")
+	passCodeToFile("test/widget_test.dart", widgetTestDartContent)
 }
 
 func passCodeToFile(path string, cont []byte) {
