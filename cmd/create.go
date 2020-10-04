@@ -18,6 +18,11 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -38,17 +43,117 @@ var createCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("create app")
+		if res, err := http.Get(fmt.Sprintf("https://jsonplaceholder.typicode.com/todos/%v", args[0])); err != nil {
+			fmt.Println(err)
+		} else {
+			createApp()
+			fmt.Println(res.StatusCode)
+		}
 	},
 }
 
-/*
-func createApp(args) error {
-	if _, err := fmt.Println("create app"); err != nil {
-		return err
+var (
+	appName             string
+	mainDartContent     []byte
+	mainDartPageContent []byte
+)
+
+func check(e error) {
+	if e != nil {
+		panic(e)
 	}
-	return nil
 }
-*/
+
+func createTDDStructure() {
+	os.MkdirAll("core/errors", os.ModePerm)
+	os.MkdirAll("features/data/data_sources", os.ModePerm)
+	os.MkdirAll("features/data/models", os.ModePerm)
+	os.MkdirAll("features/data/repositories", os.ModePerm)
+	os.MkdirAll("features/domain/entities", os.ModePerm)
+	os.MkdirAll("features/domain/repositories", os.ModePerm)
+	os.MkdirAll("features/domain/services", os.ModePerm)
+	os.MkdirAll("features/presentation/cubits", os.ModePerm)
+	os.MkdirAll("features/presentation/ui/screens", os.ModePerm)
+	os.MkdirAll("features/presentation/ui/organisms", os.ModePerm)
+	os.MkdirAll("features/presentation/ui/molecules", os.ModePerm)
+	os.MkdirAll("features/presentation/ui/atoms", os.ModePerm)
+}
+
+func writeDartFiles() {
+	mainDartContent =
+		[]byte(`import 'package:flutter/material.dart';
+	import 'package:` + appName + `/features/presentation/ui/screens/main_page.dart';
+	
+	void main() {
+		runApp(App());
+	}
+	
+	class App extends StatelessWidget {
+		@override
+		Widget build(BuildContext context) {
+			return MaterialApp(
+				title: 'Flutter App',
+				theme: ThemeData(),
+				home: MainPage(),                
+				debugShowCheckedModeBanner: false,
+			);
+		}
+	}`)
+
+	mainDartPageContent =
+		[]byte(`import 'package:flutter/material.dart';
+	class MainPage extends StatelessWidget {
+		@override
+		Widget build(BuildContext context) {
+			return Scaffold(
+				body: Center(
+					child: Container(
+						child: Text('Be Creative.')
+					)    
+				)
+			);
+		}
+	}`)
+
+	_, err := os.Create("features/presentation/ui/screens/main_page.dart")
+	check(err)
+
+	passCodeToFile("main.dart", mainDartContent)
+	passCodeToFile("features/presentation/ui/screens/main_page.dart", mainDartPageContent)
+}
+
+func passCodeToFile(path string, cont []byte) {
+	err := ioutil.WriteFile(path, cont, 0644)
+	check(err)
+}
+
+func executeFlutterCreate() {
+	err := exec.Command("flutter", "create", appName).Run()
+	check(err)
+}
+
+func getAppNameAsInput() {
+	fmt.Println("What is the name of your new Flutter project?")
+	var inputString string
+	fmt.Scanf("%s", &inputString)
+	appName = strings.ToLower(inputString)
+}
+
+func createApp() {
+	getAppNameAsInput()
+
+	executeFlutterCreate()
+
+	err := os.Chdir(appName + "/lib")
+	check(err)
+
+	createTDDStructure()
+
+	writeDartFiles()
+
+	fmt.Println("New Flutter project has been created in a clean way!")
+}
+
 func init() {
 	rootCmd.AddCommand(createCmd)
 
