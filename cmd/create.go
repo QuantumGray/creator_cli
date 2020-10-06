@@ -46,7 +46,7 @@ var createCmd = &cobra.Command{
 		if res, err := http.Get(fmt.Sprintf("https://jsonplaceholder.typicode.com/todos/%v", args[0])); err != nil {
 			fmt.Println(err)
 		} else {
-			createApp()
+			createApp(args[0])
 			fmt.Println(res.StatusCode)
 		}
 	},
@@ -139,7 +139,7 @@ func getAppNameAsInput() {
 	appName = strings.ToLower(inputString)
 }
 
-func createApp() {
+func createApp(arg string) {
 	getAppNameAsInput()
 
 	executeFlutterCreate()
@@ -151,7 +151,7 @@ func createApp() {
 
 	writeDartFiles()
 
-	fmt.Println("New Flutter project has been created in a clean way!")
+	fmt.Println(fmt.Sprintf("New Flutter project has been created in a clean way %v!", arg))
 }
 
 func init() {
