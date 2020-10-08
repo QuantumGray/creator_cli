@@ -15,8 +15,17 @@ limitations under the License.
 */
 package main
 
-import "fluttercreator/cmd"
+import (
+	"fluttercreator/func/gettemplate"
+	"fluttercreator/func/unzip"
+	"os"
+)
 
 func main() {
-	cmd.Execute()
+	url := "https://github.com/ben-fornefeld/12345678/archive/main.zip" //Github direct download link
+	//cmd.Execute()
+	//firestore.StartFirestore()
+	gettemplate.DownloadFile("template.zip", url) //Downloads file from that url
+	unzip.Unzip("template.zip", "cache")          //Unzips the file to the "cache" folder
+	os.Remove("template.zip")                     //Removes the zip after unzipping
 }
