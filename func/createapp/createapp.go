@@ -8,10 +8,6 @@ import (
 	"strings"
 )
 
-var (
-	appName string
-)
-
 func check(e error) {
 	if e != nil {
 		panic(e)
@@ -33,7 +29,7 @@ func createTDDStructure() {
 	os.MkdirAll("features/presentation/ui/atoms", os.ModePerm)
 }
 
-func writeDartFiles() {
+func writeDartFiles(appName string) {
 	mainDartContent :=
 		[]byte(`import 'package:flutter/material.dart';
 	import 'package:` + appName + `/features/presentation/ui/screens/main_page.dart';
@@ -116,29 +112,30 @@ func passCodeToFile(path string, cont []byte) {
 	check(err)
 }
 
-func executeFlutterCreate() {
+func executeFlutterCreate(appName string) {
 	err := exec.Command("flutter", "create", appName).Run()
 	check(err)
 }
 
-func getAppNameAsInput() {
+func getAppNameAsInput() string {
 	fmt.Println("What is the name of your new Flutter project?")
 	var inputString string
 	fmt.Scanf("%s", &inputString)
-	appName = strings.ToLower(inputString)
+	appName := strings.ToLower(inputString)
+	return appName
 }
 
 func CreateApp() {
-	getAppNameAsInput()
+	appName := getAppNameAsInput()
 
-	executeFlutterCreate()
+	executeFlutterCreate(appName)
 
 	err := os.Chdir(appName + "/lib")
 	check(err)
 
 	createTDDStructure()
 
-	writeDartFiles()
+	writeDartFiles(appName)
 
-	fmt.Println("New Flutter project has been created in a clean way!")
+	fmt.Println("Flutter project has been created in a clean way!")
 }
