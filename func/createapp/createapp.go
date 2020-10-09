@@ -42,7 +42,7 @@ func writeDartFiles(appName string) {
 		@override
 		Widget build(BuildContext context) {
 			return MaterialApp(
-				title: 'Flutteri App',
+				title: 'Flutterinio App',
 				theme: ThemeData(),
 				home: MainPage(),                
 				debugShowCheckedModeBanner: false,
