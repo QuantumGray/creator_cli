@@ -1,15 +1,15 @@
 package createapp
 
 import (
+	"errors"
+	"fluttercreator/func/gettemplate"
+	"fluttercreator/func/unzip"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"os/exec"
 	"strings"
-)
-
-var (
-	appName string
 )
 
 func check(e error) {
@@ -33,7 +33,7 @@ func createTDDStructure() {
 	os.MkdirAll("features/presentation/ui/atoms", os.ModePerm)
 }
 
-func writeDartFiles() {
+func writeDartFiles(appName string) {
 	mainDartContent :=
 		[]byte(`import 'package:flutter/material.dart';
 	import 'package:` + appName + `/features/presentation/ui/screens/main_page.dart';
@@ -46,7 +46,7 @@ func writeDartFiles() {
 		@override
 		Widget build(BuildContext context) {
 			return MaterialApp(
-				title: 'Flutter App',
+				title: 'Flutterinio App',
 				theme: ThemeData(),
 				home: MainPage(),                
 				debugShowCheckedModeBanner: false,
@@ -116,29 +116,48 @@ func passCodeToFile(path string, cont []byte) {
 	check(err)
 }
 
-func executeFlutterCreate() {
+func executeFlutterCreate(appName string) {
 	err := exec.Command("flutter", "create", appName).Run()
 	check(err)
 }
 
-func getAppNameAsInput() {
+func getAppNameAsInput() string {
 	fmt.Println("What is the name of your new Flutter project?")
 	var inputString string
 	fmt.Scanf("%s", &inputString)
-	appName = strings.ToLower(inputString)
+	appName := strings.ToLower(inputString)
+	return appName
 }
 
-func CreateApp() {
-	getAppNameAsInput()
+func getTemplate(arg string) error {
+	if res, err := http.Get("ourservertochecktemplateavailability"); err != nil {
+		url := "https://github.com/" + arg + "/archive/main.zip"
+		gettemplate.DownloadFile(fmt.Sprintf("fc_t_%v.zip", arg), url) //Downloads file from that url
+		unzip.Unzip("template.zip", "cache")                           //Unzips the file to the "cache" folder
+		os.Remove("template.zip")
+	} else if res.StatusCode == 404 {
+		fmt.Println("template was not found!")
+		CreateApp(arg)
+	} else {
+		fmt.Println("error occured while trying to search for your template")
+		return err
+	}
+	return errors.New("unknown error at getTemplate()")
+}
 
-	executeFlutterCreate()
+func CreateApp(arg string) {
+	appName := getAppNameAsInput()
+
+	getTemplate(arg)
+
+	executeFlutterCreate(appName)
 
 	err := os.Chdir(appName + "/lib")
 	check(err)
 
 	createTDDStructure()
 
-	writeDartFiles()
+	writeDartFiles(appName)
 
-	fmt.Println("New Flutter project has been created in a clean way!")
+	fmt.Println("Flutter project has been created in a clean way!")
 }
