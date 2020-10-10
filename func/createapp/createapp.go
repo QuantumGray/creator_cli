@@ -1,8 +1,12 @@
 package createapp
 
 import (
+	"errors"
+	"fluttercreator/func/gettemplate"
+	"fluttercreator/func/unzip"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"os/exec"
 	"strings"
@@ -125,8 +129,26 @@ func getAppNameAsInput() string {
 	return appName
 }
 
-func CreateApp() {
+func getTemplate(arg string) error {
+	if res, err := http.Get("ourservertochecktemplateavailability"); err != nil {
+		url := "https://github.com/" + arg + "/archive/main.zip"
+		gettemplate.DownloadFile(fmt.Sprintf("fc_t_%v.zip", arg), url) //Downloads file from that url
+		unzip.Unzip("template.zip", "cache")                           //Unzips the file to the "cache" folder
+		os.Remove("template.zip")
+	} else if res.StatusCode == 404 {
+		fmt.Println("template was not found!")
+		CreateApp(arg)
+	} else {
+		fmt.Println("error occured while trying to search for your template")
+		return err
+	}
+	return errors.New("unknown error at getTemplate()")
+}
+
+func CreateApp(arg string) {
 	appName := getAppNameAsInput()
+
+	getTemplate(arg)
 
 	executeFlutterCreate(appName)
 

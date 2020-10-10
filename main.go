@@ -15,7 +15,9 @@ limitations under the License.
 */
 package main
 
-import "fluttercreator/cmd"
+import (
+	"fluttercreator/cmd"
+)
 
 func main() {
 	cmd.Execute()
