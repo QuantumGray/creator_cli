@@ -1,14 +1,13 @@
 package createapp
 
 import (
-	"errors"
 	"fluttercreator/util/gettemplate"
 	"fluttercreator/util/unzip"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -129,20 +128,18 @@ func getAppNameAsInput() string {
 	return appName
 }
 
-func getTemplate(arg string) error {
-	if res, err := http.Get("ourservertochecktemplateavailability"); err != nil {
-		url := "https://github.com/" + arg + "/archive/main.zip"
-		gettemplate.DownloadFile(fmt.Sprintf("fc_t_%v.zip", arg), url) //Downloads file from that url
-		unzip.Unzip("template.zip", "cache")                           //Unzips the file to the "cache" folder
-		os.Remove("template.zip")
-	} else if res.StatusCode == 404 {
-		fmt.Println("template was not found!")
-		CreateApp(arg)
-	} else {
-		fmt.Println("error occured while trying to search for your template")
-		return err
+func getTemplate(arg string) {
+	url := "https://github.com/ben-fornefeld/" + arg + "/archive/main.zip"
+	gettemplate.DownloadFile(fmt.Sprintf("fc_t_%v.zip", arg), url) //Downloads file from that url
+
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
 	}
-	return errors.New("unknown error at getTemplate()")
+	exPath := filepath.Dir(ex)
+
+	unzip.Unzip(fmt.Sprintf("fc_t_%v.zip", arg), exPath+"/../cache") //Unzips the file to the "cache" folder
+	os.Remove(fmt.Sprintf("fc_t_%v.zip", arg))
 }
 
 func CreateApp(arg string) {

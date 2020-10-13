@@ -34,9 +34,10 @@ var createCmd = &cobra.Command{
 		if err := validators.CreateCommandArgsValidation(args); err != nil {
 			return err
 		}
+		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("arguments passed to Run: %v", args[0])
+		fmt.Println("arguments passed to Run: " + args[0])
 		createapp.CreateApp(args[0])
 	},
 }
