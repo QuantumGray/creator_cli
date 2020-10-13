@@ -19,8 +19,8 @@ limitations under the License.
 
 import (
 	"errors"
-	gettemplate "fluttercreator/func/gettemplate"
-	"fluttercreator/func/unzip"
+	gettemplate "fluttercreator/util/gettemplate"
+	"fluttercreator/util/unzip"
 	"os"
 
 	"github.com/spf13/cobra"

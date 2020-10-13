@@ -18,8 +18,8 @@ limitations under the License.
 */
 
 import (
-	"errors"
-	createapp "fluttercreator/func/createapp"
+	createapp "fluttercreator/util/createapp"
+	validators "fluttercreator/util/validators"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -31,17 +31,13 @@ var createCmd = &cobra.Command{
 	Short: "create an app from a template with a SHA",
 	Long:  `do it 4real`,
 	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args[0]) != 8 {
-			return errors.New("this hasn't got 8 chars")
+		if err := validators.CreateCommandArgsValidation(args); err != nil {
+			return err
 		}
-		if len(args) != 1 {
-			return errors.New("too many positional args")
-		}
-		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("arguments passed to Run: %v", args[0])
-		createapp.CreateApp()
+		createapp.CreateApp(args[0])
 	},
 }
 
