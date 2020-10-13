@@ -2,6 +2,8 @@
 
 ### toolkit to make create apps from templates & create templates from apps
 
+![](https://img.shields.io/github/stars/QuantumGray/fluttercreator_cli.svg) ![](https://img.shields.io/github/forks/QuantumGray/fluttercreator_cli.svg) ![](https://img.shields.io/github/tag/QuantumGray/fluttercreator_cli.svg) ![](https://img.shields.io/github/release/QuantumGray/fluttercreator_cli.svg) ![](https://img.shields.io/github/issues/QuantumGray/fluttercreator_cli.svg)
+
 ##### features :
 
 - create Flutter apps from templates that are published on [CREATOR REGISTRY](http://google.com "fluttercreator_registry")
