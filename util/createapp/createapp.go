@@ -133,9 +133,7 @@ func getTemplate(arg string) {
 	gettemplate.DownloadFile(fmt.Sprintf("fc_t_%v.zip", arg), url) //Downloads file from that url
 
 	ex, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
+	check(err)
 	exPath := filepath.Dir(ex)
 
 	unzip.Unzip(fmt.Sprintf("fc_t_%v.zip", arg), exPath+"/../cache") //Unzips the file to the "cache" folder
