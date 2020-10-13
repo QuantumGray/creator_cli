@@ -11,6 +11,11 @@ import (
 	"strings"
 )
 
+// CreateContext : context parameter that gets passed arround by creator functions
+type CreateContext struct {
+	getValue map[string]string
+}
+
 func check(e error) {
 	if e != nil {
 		panic(e)
@@ -121,7 +126,7 @@ func executeFlutterCreate(appName string) {
 }
 
 func getAppNameAsInput() string {
-	fmt.Println("What is the name of your new Flutter project?")
+	fmt.Println("What is the name of your creator project?")
 	var inputString string
 	fmt.Scanf("%s", &inputString)
 	appName := strings.ToLower(inputString)
@@ -140,6 +145,7 @@ func getTemplate(arg string) {
 	os.Remove(fmt.Sprintf("fc_t_%v.zip", arg))
 }
 
+// CreateApp : parent function to delegate creator functions
 func CreateApp(arg string) {
 	appName := getAppNameAsInput()
 
