@@ -1,7 +1,6 @@
 package createapp
 
 import (
-	"errors"
 	"fluttercreator/util/gettemplate"
 	"fluttercreator/util/unzip"
 	"fmt"
@@ -11,6 +10,11 @@ import (
 	"os/exec"
 	"strings"
 )
+
+// CreateContext : context parameter that gets passed arround by creator functions
+type CreateContext struct {
+	getValue map[string]string
+}
 
 func check(e error) {
 	if e != nil {
@@ -122,29 +126,28 @@ func executeFlutterCreate(appName string) {
 }
 
 func getAppNameAsInput() string {
-	fmt.Println("What is the name of your new Flutter project?")
+	fmt.Println("What is the name of your creator project?")
 	var inputString string
 	fmt.Scanf("%s", &inputString)
 	appName := strings.ToLower(inputString)
 	return appName
 }
 
-func getTemplate(arg string) error {
+func getTemplate(arg string) {
 	if res, err := http.Get("ourservertochecktemplateavailability"); err != nil {
+		if res.StatusCode == 404 {
+			fmt.Println("template was not found!")
+			CreateApp(arg)
+		}
+	} else if err == nil {
 		url := "https://github.com/" + arg + "/archive/main.zip"
 		gettemplate.DownloadFile(fmt.Sprintf("fc_t_%v.zip", arg), url) //Downloads file from that url
 		unzip.Unzip("template.zip", "cache")                           //Unzips the file to the "cache" folder
 		os.Remove("template.zip")
-	} else if res.StatusCode == 404 {
-		fmt.Println("template was not found!")
-		CreateApp(arg)
-	} else {
-		fmt.Println("error occured while trying to search for your template")
-		return err
 	}
-	return errors.New("unknown error at getTemplate()")
 }
 
+// CreateApp : parent function to delegate creator functions
 func CreateApp(arg string) {
 	appName := getAppNameAsInput()
 
