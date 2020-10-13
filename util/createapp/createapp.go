@@ -16,43 +16,30 @@ type CreateContext struct {
 	getValue map[string]string
 }
 
-func check(e error) {
+func check(e error) error {
 	if e != nil {
-		panic(e)
+		return e
 	}
+	return nil
 }
 
-func createTDDStructure() {
-	os.MkdirAll("core/errors", os.ModePerm)
-	os.MkdirAll("features/data/data_sources", os.ModePerm)
-	os.MkdirAll("features/data/models", os.ModePerm)
-	os.MkdirAll("features/data/repositories", os.ModePerm)
-	os.MkdirAll("features/domain/entities", os.ModePerm)
-	os.MkdirAll("features/domain/repositories", os.ModePerm)
-	os.MkdirAll("features/domain/services", os.ModePerm)
-	os.MkdirAll("features/presentation/cubits", os.ModePerm)
-	os.MkdirAll("features/presentation/ui/screens", os.ModePerm)
-	os.MkdirAll("features/presentation/ui/organisms", os.ModePerm)
-	os.MkdirAll("features/presentation/ui/molecules", os.ModePerm)
-	os.MkdirAll("features/presentation/ui/atoms", os.ModePerm)
-}
-
+/*
 func writeDartFiles(appName string) {
 	mainDartContent :=
 		[]byte(`import 'package:flutter/material.dart';
 	import 'package:` + appName + `/features/presentation/ui/screens/main_page.dart';
-	
+
 	void main() {
 		runApp(App());
 	}
-	
+
 	class App extends StatelessWidget {
 		@override
 		Widget build(BuildContext context) {
 			return MaterialApp(
 				title: 'Flutterinio App',
 				theme: ThemeData(),
-				home: MainPage(),                
+				home: MainPage(),
 				debugShowCheckedModeBanner: false,
 			);
 		}
@@ -67,7 +54,7 @@ func writeDartFiles(appName string) {
 				body: Center(
 					child: Container(
 						child: Text('Be Creative.')
-					)    
+					)
 				)
 			);
 		}
@@ -80,25 +67,25 @@ func writeDartFiles(appName string) {
 		// utility that Flutter provides. For example, you can send tap and scroll
 		// gestures. You can also use WidgetTester to find child widgets in the widget
 		// tree, read text, and verify that the values of widget properties are correct.
-		
+
 		import 'package:flutter/material.dart';
 		import 'package:flutter_test/flutter_test.dart';
-		
+
 		import 'package:` + appName + `/main.dart';
-		
+
 		void main() {
 		  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
 			// Build our app and trigger a frame.
 			await tester.pumpWidget(App());
-		
+
 			// Verify that our counter starts at 0.
 			expect(find.text('0'), findsOneWidget);
 			expect(find.text('1'), findsNothing);
-		
+
 			// Tap the '+' icon and trigger a frame.
 			await tester.tap(find.byIcon(Icons.add));
 			await tester.pump();
-		
+
 			// Verify that our counter has incremented.
 			expect(find.text('0'), findsNothing);
 			expect(find.text('1'), findsOneWidget);
@@ -114,6 +101,7 @@ func writeDartFiles(appName string) {
 	os.Chdir("..")
 	passCodeToFile("test/widget_test.dart", widgetTestDartContent)
 }
+*/
 
 func passCodeToFile(path string, cont []byte) {
 	err := ioutil.WriteFile(path, cont, 0644)
@@ -149,18 +137,17 @@ func getTemplate(arg string) {
 
 // CreateApp : parent function to delegate creator functions
 func CreateApp(arg string) {
-	appName := getAppNameAsInput()
+	ctx := CreateContext{make(map[string]string)}
+
+	ctx.getValue["appName"] = getAppNameAsInput()
 
 	getTemplate(arg)
 
-	executeFlutterCreate(appName)
+	executeFlutterCreate(ctx.getValue["appName"])
 
-	err := os.Chdir(appName + "/lib")
+	err := os.Chdir(ctx.getValue["appName"] + "/lib")
+
 	check(err)
-
-	createTDDStructure()
-
-	writeDartFiles(appName)
 
 	fmt.Println("Flutter project has been created in a clean way!")
 }

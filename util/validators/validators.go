@@ -14,3 +14,8 @@ func CreateCommandArgsValidation(args []string) error {
 	}
 	return nil
 }
+
+// AppNameValidation : validates app name to be a valid argument
+func AppNameValidation(arg string) {
+
+}
