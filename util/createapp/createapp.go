@@ -5,9 +5,9 @@ import (
 	"fluttercreator/util/unzip"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -134,17 +134,17 @@ func getAppNameAsInput() string {
 }
 
 func getTemplate(arg string) {
-	if res, err := http.Get("ourservertochecktemplateavailability"); err != nil {
-		if res.StatusCode == 404 {
-			fmt.Println("template was not found!")
-			CreateApp(arg)
-		}
-	} else if err == nil {
-		url := "https://github.com/" + arg + "/archive/main.zip"
-		gettemplate.DownloadFile(fmt.Sprintf("fc_t_%v.zip", arg), url) //Downloads file from that url
-		unzip.Unzip("template.zip", "cache")                           //Unzips the file to the "cache" folder
-		os.Remove("template.zip")
+	url := "https://github.com/ben-fornefeld/" + arg + "/archive/main.zip"
+	gettemplate.DownloadFile(fmt.Sprintf("fc_t_%v.zip", arg), url) //Downloads file from that url
+
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
 	}
+	exPath := filepath.Dir(ex)
+
+	unzip.Unzip(fmt.Sprintf("fc_t_%v.zip", arg), exPath+"/../cache") //Unzips the file to the "cache" folder
+	os.Remove(fmt.Sprintf("fc_t_%v.zip", arg))
 }
 
 // CreateApp : parent function to delegate creator functions
