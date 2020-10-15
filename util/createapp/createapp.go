@@ -1,6 +1,7 @@
 package createapp
 
 import (
+	"fluttercreator/util/copy"
 	"fluttercreator/util/gettemplate"
 	"fluttercreator/util/unzip"
 	"fmt"
@@ -121,16 +122,23 @@ func getAppNameAsInput() string {
 	return appName
 }
 
-func getTemplate(arg string) {
+func getTemplate(arg, appName string) {
+	fmt.Println("getTemplate")
 	url := "https://github.com/ben-fornefeld/" + arg + "/archive/main.zip"
 	gettemplate.DownloadFile(fmt.Sprintf("fc_t_%v.zip", arg), url) //Downloads file from that url
-
 	ex, err := os.Executable()
 	check(err)
 	exPath := filepath.Dir(ex)
-
 	unzip.Unzip(fmt.Sprintf("fc_t_%v.zip", arg), exPath+"/../cache") //Unzips the file to the "cache" folder
 	os.Remove(fmt.Sprintf("fc_t_%v.zip", arg))
+	copyCacheToProject(arg, exPath, appName)
+}
+
+func copyCacheToProject(arg, path, appName string) {
+	fmt.Println("copyCache")
+	err := copy.CopyDir(path+"/../cache/"+arg+"-main/", appName)
+	check(err)
+
 }
 
 // CreateApp : parent function to delegate creator functions
@@ -139,13 +147,9 @@ func CreateApp(arg string) {
 
 	ctx.getValue["appName"] = getAppNameAsInput()
 
-	getTemplate(arg)
-
 	executeFlutterCreate(ctx.getValue["appName"])
 
-	err := os.Chdir(ctx.getValue["appName"] + "/lib")
-
-	check(err)
+	getTemplate(arg, ctx.getValue["appName"])
 
 	fmt.Println("Flutter project has been created in a clean way!")
 }
