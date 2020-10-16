@@ -1,7 +1,7 @@
 package validators
 
 import (
-	typeserrors "fluttercreator/util/typeserrors"
+	typeserrors "creator/util/typeserrors"
 )
 
 // CreateCommandArgsValidation : validates arguments from create command

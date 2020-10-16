@@ -1,10 +1,10 @@
 package createapp
 
 import (
-	"fluttercreator/util/copy"
-	"fluttercreator/util/gettemplate"
-	"fluttercreator/util/handledartfiles"
-	"fluttercreator/util/unzip"
+	"creator/util/copy"
+	"creator/util/gettemplate"
+	"creator/util/handledartfiles"
+	"creator/util/unzip"
 	"fmt"
 	"io/ioutil"
 	"os"

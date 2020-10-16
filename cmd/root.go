@@ -30,7 +30,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "fluttercreator",
+	Use:   "creator",
 	Short: "start with beautiful flutter applications",
 	Long:  `checkout our template registry under: URL`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -49,7 +49,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.fluttercreator.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.creator.yaml)")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
@@ -68,7 +68,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".fluttercreator" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".fluttercreator")
+		viper.SetConfigName(".creator")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

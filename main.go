@@ -16,7 +16,7 @@ limitations under the License.
 package main
 
 import (
-	"fluttercreator/cmd"
+	"creator/cmd"
 )
 
 func main() {

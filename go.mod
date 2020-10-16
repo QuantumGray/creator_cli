@@ -1,4 +1,4 @@
-module fluttercreator
+module creator
 
 go 1.14
 

@@ -18,8 +18,8 @@ limitations under the License.
 */
 
 import (
-	createapp "fluttercreator/util/createapp"
-	validators "fluttercreator/util/validators"
+	createapp "creator/util/createapp"
+	validators "creator/util/validators"
 	"fmt"
 
 	"github.com/spf13/cobra"
