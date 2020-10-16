@@ -1,6 +1,7 @@
 package createapp
 
 import (
+	context "creator/util/contexts"
 	"creator/util/copy"
 	"creator/util/gettemplate"
 	"creator/util/handledartfiles"
@@ -142,14 +143,12 @@ func copyCacheToProject(arg, path, appName string) {
 }
 
 // CreateApp : parent function to delegate creator functions
-func CreateApp(arg string) {
-	ctx := CreateContext{make(map[string]string)}
+func CreateApp(ctx context.Context) {
+	ctx.GetValue["appName"] = getAppNameAsInput()
 
-	ctx.getValue["appName"] = getAppNameAsInput()
+	executeFlutterCreate(ctx.GetValue["appName"])
 
-	executeFlutterCreate(ctx.getValue["appName"])
-
-	getTemplate(arg, ctx.getValue["appName"])
+	getTemplate(ctx.GetValue["SHA"], ctx.GetValue["appName"])
 
 	fmt.Println("Flutter project has been created in a clean way!")
 }

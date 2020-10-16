@@ -18,9 +18,9 @@ limitations under the License.
 */
 
 import (
+	context "creator/util/contexts"
 	createapp "creator/util/createapp"
 	validators "creator/util/validators"
-	"fmt"
 
 	"github.com/spf13/cobra"
 )
@@ -37,8 +37,9 @@ var createCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("arguments passed to Run: " + args[0])
-		createapp.CreateApp(args[0])
+		ctx := context.NewContext("createContext")
+		ctx.GetValue["SHA"] = args[0]
+		createapp.CreateApp(ctx)
 	},
 }
 
