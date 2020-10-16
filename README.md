@@ -1,21 +1,21 @@
-# fluttercreator
+# creator
 
 ### toolkit to make create apps from templates & create templates from apps
 
-![](https://img.shields.io/github/stars/QuantumGray/fluttercreator_cli.svg) ![](https://img.shields.io/github/forks/QuantumGray/fluttercreator_cli.svg) ![](https://img.shields.io/github/tag/QuantumGray/fluttercreator_cli.svg) ![](https://img.shields.io/github/release/QuantumGray/fluttercreator_cli.svg) ![](https://img.shields.io/github/issues/QuantumGray/fluttercreator_cli.svg)
+![](https://img.shields.io/github/stars/QuantumGray/fluttercreator_cli.svg) ![](https://img.shields.io/github/forks/QuantumGray/creator_cli.svg) ![](https://img.shields.io/github/tag/QuantumGray/fluttercreator_cli.svg) ![](https://img.shields.io/github/release/QuantumGray/creator_cli.svg) ![](https://img.shields.io/github/issues/QuantumGray/creator_cli.svg)
 
 ##### features :
 
-- create Flutter apps from templates that are published on [CREATOR REGISTRY](http://google.com "fluttercreator_registry")
+- create apps from templates that are published on [CREATOR REGISTRY](http://google.com "creator_registry")
 - cache templates locally
-- create templates from existing flutter apps (soon)
+- create templates from existing apps (soon)
 - automatically set up firebase for your project (soon)
 
 ##### installation :
-- download fluttercreator via [this link](http://google.com "this link") or clone the repository
+- download creator via [this link](http://google.com "this link") or clone the repository
 
 ```bash
-git clone https://github.com/QuantumGray/fluttercreator_cli
+git clone https://github.com/QuantumGray/creator_cli
 ```
 
 
@@ -24,16 +24,16 @@ git clone https://github.com/QuantumGray/fluttercreator_cli
 
 ##### usage :
 
-how to use fluttercreator
+how to use creator
 
-###### create Flutter apps
-command **create** plus an **8**-digit hex identifier from the template registry downloads the app and creates a flutter app in the current directory - it prompts you to enter a name for your app
+###### create apps
+command **create** plus an **8**-digit hex identifier from the template registry downloads the app and creates an app in the current directory - it prompts you to enter a name for your app
 
 ```bash
-fluttercreator create 1T3F5S7E
+creator create 1T3F5S7E
 ```
 
-initiates the Flutter app with firebase preconfigured
+initiates the Creator app with firebase preconfigured
 
 - `-f BUNDLE_ID`
 
@@ -41,15 +41,15 @@ stores the template locally
 - `-c`
 
 ###### create app templates :
-command **createtemplate** plus a name for your template creates a template from your Flutter app in current directory
+command **createtemplate** plus a name for your template creates a template from your Creator app in current directory
 
 ```bash
-fluttercreator createtemplate myTemplate
+creator createtemplate myTemplate
 ```
 
-optionaly declare a path to the Flutter app
+optionaly declare a path to the app
 
-- `-p "PATH/TO/FLUTTER/APP"`
+- `-p "PATH/TO/YOUR/APP"`
 
 load up the template to [CREATOR REGISTRY](http://google.com "CREATOR REGISTRY") with your API KEY that you can find in the account panel
 
