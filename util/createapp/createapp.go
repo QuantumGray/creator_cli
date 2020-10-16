@@ -3,6 +3,7 @@ package createapp
 import (
 	"fluttercreator/util/copy"
 	"fluttercreator/util/gettemplate"
+	"fluttercreator/util/handledartfiles"
 	"fluttercreator/util/unzip"
 	"fmt"
 	"io/ioutil"
@@ -123,7 +124,6 @@ func getAppNameAsInput() string {
 }
 
 func getTemplate(arg, appName string) {
-	fmt.Println("getTemplate")
 	url := "https://github.com/ben-fornefeld/" + arg + "/archive/main.zip"
 	gettemplate.DownloadFile(fmt.Sprintf("fc_t_%v.zip", arg), url) //Downloads file from that url
 	ex, err := os.Executable()
@@ -135,10 +135,10 @@ func getTemplate(arg, appName string) {
 }
 
 func copyCacheToProject(arg, path, appName string) {
-	fmt.Println("copyCache")
 	err := copy.CopyDir(path+"/../cache/"+arg+"-main/", appName)
 	check(err)
-
+	//handledartfiles.ParseFile(appName+"/lib/main.dart", appName)
+	handledartfiles.ScanForFiles(appName+"/lib", appName)
 }
 
 // CreateApp : parent function to delegate creator functions
