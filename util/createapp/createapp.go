@@ -1,7 +1,7 @@
 package createapp
 
 import (
-	context "creator/util/contexts"
+	"creator/util/contexts"
 	"creator/util/copy"
 	"creator/util/gettemplate"
 	"creator/util/handledartfiles"
@@ -14,11 +14,6 @@ import (
 	"strings"
 )
 
-// CreateContext : context parameter that gets passed arround by creator functions
-type CreateContext struct {
-	getValue map[string]string
-}
-
 func check(e error) error {
 	if e != nil {
 		return e
@@ -26,92 +21,13 @@ func check(e error) error {
 	return nil
 }
 
-/*
-func writeDartFiles(appName string) {
-	mainDartContent :=
-		[]byte(`import 'package:flutter/material.dart';
-	import 'package:` + appName + `/features/presentation/ui/screens/main_page.dart';
-
-	void main() {
-		runApp(App());
-	}
-
-	class App extends StatelessWidget {
-		@override
-		Widget build(BuildContext context) {
-			return MaterialApp(
-				title: 'Flutterinio App',
-				theme: ThemeData(),
-				home: MainPage(),
-				debugShowCheckedModeBanner: false,
-			);
-		}
-	}`)
-
-	mainDartPageContent :=
-		[]byte(`import 'package:flutter/material.dart';
-	class MainPage extends StatelessWidget {
-		@override
-		Widget build(BuildContext context) {
-			return Scaffold(
-				body: Center(
-					child: Container(
-						child: Text('Be Creative.')
-					)
-				)
-			);
-		}
-	}`)
-
-	widgetTestDartContent :=
-		[]byte(`// This is a basic Flutter widget test.
-		//
-		// To perform an interaction with a widget in your test, use the WidgetTester
-		// utility that Flutter provides. For example, you can send tap and scroll
-		// gestures. You can also use WidgetTester to find child widgets in the widget
-		// tree, read text, and verify that the values of widget properties are correct.
-
-		import 'package:flutter/material.dart';
-		import 'package:flutter_test/flutter_test.dart';
-
-		import 'package:` + appName + `/main.dart';
-
-		void main() {
-		  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-			// Build our app and trigger a frame.
-			await tester.pumpWidget(App());
-
-			// Verify that our counter starts at 0.
-			expect(find.text('0'), findsOneWidget);
-			expect(find.text('1'), findsNothing);
-
-			// Tap the '+' icon and trigger a frame.
-			await tester.tap(find.byIcon(Icons.add));
-			await tester.pump();
-
-			// Verify that our counter has incremented.
-			expect(find.text('0'), findsNothing);
-			expect(find.text('1'), findsOneWidget);
-		  });
-		}
-		`)
-
-	_, err := os.Create("features/presentation/ui/screens/main_page.dart")
-	check(err)
-
-	passCodeToFile("main.dart", mainDartContent)
-	passCodeToFile("features/presentation/ui/screens/main_page.dart", mainDartPageContent)
-	os.Chdir("..")
-	passCodeToFile("test/widget_test.dart", widgetTestDartContent)
-}
-*/
-
 func passCodeToFile(path string, cont []byte) {
 	err := ioutil.WriteFile(path, cont, 0644)
 	check(err)
 }
 
-func executeFlutterCreate(appName string) {
+func executeFlutterCreate(ctx *contexts.Context) {
+	appName := ctx.GetValue["APPNAME"]
 	err := exec.Command("flutter", "create", appName).Run()
 	check(err)
 }
@@ -124,31 +40,40 @@ func getAppNameAsInput() string {
 	return appName
 }
 
-func getTemplate(arg, appName string) {
+func getTemplate(ctx *contexts.Context) {
+	arg := ctx.GetValue["SHA"]
+
 	url := "https://github.com/ben-fornefeld/" + arg + "/archive/main.zip"
 	gettemplate.DownloadFile(fmt.Sprintf("fc_t_%v.zip", arg), url) //Downloads file from that url
+
 	ex, err := os.Executable()
 	check(err)
 	exPath := filepath.Dir(ex)
+	ctx.GetValue["EXPATH"] = exPath
+
 	unzip.Unzip(fmt.Sprintf("fc_t_%v.zip", arg), exPath+"/../cache") //Unzips the file to the "cache" folder
 	os.Remove(fmt.Sprintf("fc_t_%v.zip", arg))
-	copyCacheToProject(arg, exPath, appName)
+	copyCacheToProject(ctx)
 }
 
-func copyCacheToProject(arg, path, appName string) {
+func copyCacheToProject(ctx *contexts.Context) {
+	arg := ctx.GetValue["SHA"]
+	appName := ctx.GetValue["APPNAME"]
+	path := ctx.GetValue["EXPATH"]
+
 	err := copy.CopyDir(path+"/../cache/"+arg+"-main/", appName)
 	check(err)
 	//handledartfiles.ParseFile(appName+"/lib/main.dart", appName)
-	handledartfiles.ScanForFiles(appName+"/lib", appName)
+	handledartfiles.ScanForFiles(ctx, appName+"/lib")
 }
 
 // CreateApp : parent function to delegate creator functions
-func CreateApp(ctx context.Context) {
-	ctx.GetValue["appName"] = getAppNameAsInput()
+func CreateApp(ctx *contexts.Context) {
+	ctx.GetValue["APPNAME"] = getAppNameAsInput()
 
-	executeFlutterCreate(ctx.GetValue["appName"])
+	executeFlutterCreate(ctx)
 
-	getTemplate(ctx.GetValue["SHA"], ctx.GetValue["appName"])
+	getTemplate(ctx)
 
 	fmt.Println("Flutter project has been created in a clean way!")
 }

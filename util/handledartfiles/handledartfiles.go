@@ -1,17 +1,12 @@
 package handledartfiles
 
 import (
+	"creator/util/contexts"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 )
-
-type CreateContext struct {
-	getValue map[string]string
-}
-
-var ctx = CreateContext{make(map[string]string)}
 
 //Parses the dart file and looks for "-APPNAME-"
 func parseFile(dest, appName string) error {
@@ -22,7 +17,7 @@ func parseFile(dest, appName string) error {
 	s := string(data)
 
 	if strings.Contains(s, "$APPNAME$") {
-		bs := []byte(strings.ReplaceAll(s, "$APPNAME$", ctx.getValue["appName"]))
+		bs := []byte(strings.ReplaceAll(s, "$APPNAME$", appName))
 		err = ioutil.WriteFile(dest, bs, 0644)
 		if err != nil {
 			return err
@@ -32,8 +27,8 @@ func parseFile(dest, appName string) error {
 }
 
 //Detects all '.dart' files in root
-func ScanForFiles(root, appName string) {
-	ctx.getValue["appName"] = appName
+func ScanForFiles(ctx *contexts.Context, root string) {
+	appName := ctx.GetValue["APPNAME"]
 
 	var files []string
 
