@@ -8,17 +8,17 @@ import (
 	"creator/util/unzip"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 )
 
-func check(e error) error {
-	if e != nil {
-		return e
+func check(err error) {
+	if err != nil {
+		log.Fatal(err)
 	}
-	return nil
 }
 
 func passCodeToFile(path string, cont []byte) {
@@ -69,6 +69,8 @@ func copyCacheToProject(ctx *contexts.Context) {
 
 // CreateApp : parent function to delegate creator functions
 func CreateApp(ctx *contexts.Context) {
+	//firestore.CreateClient(ctx)
+
 	ctx.GetValue["APPNAME"] = getAppNameAsInput()
 
 	executeFlutterCreate(ctx)

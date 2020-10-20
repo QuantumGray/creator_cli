@@ -3,10 +3,17 @@ package handledartfiles
 import (
 	"creator/util/contexts"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+func check(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 //Parses the dart file and looks for "-APPNAME-"
 func parseFile(dest, appName string) error {
@@ -31,17 +38,24 @@ func ScanForFiles(ctx *contexts.Context, root string) {
 	appName := ctx.GetValue["APPNAME"]
 
 	var files []string
+	var dummys []string
 
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if strings.Contains(path, ".dart") {
 			files = append(files, path)
 		}
+		if strings.Contains(path, ".dummy") {
+			dummys = append(dummys, path)
+		}
 		return nil
 	})
-	if err != nil {
-		panic(err)
-	}
+	check(err)
 	for _, file := range files {
-		parseFile(file, appName)
+		err := parseFile(file, appName)
+		check(err)
+	}
+	for _, file := range dummys {
+		err := os.Remove(file)
+		check(err)
 	}
 }
