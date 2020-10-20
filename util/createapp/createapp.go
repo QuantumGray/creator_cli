@@ -67,7 +67,7 @@ func copyCacheToProject(ctx *contexts.Context) {
 
 	err := copy.CopyDir(path+"/../cache/"+arg+"/", appName)
 	check(err)
-	//handledartfiles.ParseFile(appName+"/lib/main.dart", appName)
+	handledartfiles.ScanForFiles(ctx, appName+"/test")
 	handledartfiles.ScanForFiles(ctx, appName+"/lib")
 }
 
