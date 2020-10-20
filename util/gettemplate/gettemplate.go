@@ -1,15 +1,15 @@
 package gettemplate
 
 import (
-	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 )
 
-func check(e error) {
-	if e != nil {
-		fmt.Println(e)
+func check(err error) {
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 

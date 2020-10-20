@@ -18,12 +18,21 @@ limitations under the License.
 */
 
 import (
-	"errors"
-	createapp "fluttercreator/func/createapp"
-	"fmt"
+	"creator/util/contexts"
+	"creator/util/createapp"
+	"creator/util/flutter"
 
 	"github.com/spf13/cobra"
 )
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
@@ -31,17 +40,26 @@ var createCmd = &cobra.Command{
 	Short: "create an app from a template with a SHA",
 	Long:  `do it 4real`,
 	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args[0]) != 8 {
-			return errors.New("this hasn't got 8 chars")
-		}
-		if len(args) != 1 {
-			return errors.New("too many positional args")
-		}
+		/*
+			if err := validators.CreateCommandArgsValidation(args); err != nil {
+				return err
+			}
+			return nil
+		*/
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("arguments passed to Run: %v", args[0])
-		createapp.CreateApp()
+		ctx := contexts.NewContext("createContext")
+		ctx.GetValue["SHA"] = args[0]
+		if contains(args, "web") {
+			ctx.GetValue["WEB"] = "enabled"
+		} else {
+			ctx.GetValue["WEB"] = "disabled"
+		}
+		createapp.CreateApp(ctx)
+		if contains(args, "run") {
+			flutter.Run(ctx)
+		}
 	},
 }
 func init() {
