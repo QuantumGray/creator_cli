@@ -18,51 +18,29 @@ limitations under the License.
 */
 
 import (
-	"creator/util/contexts"
-	"creator/util/createapp"
-	"creator/util/flutter"
+	"creator/util/websupport"
 
 	"github.com/spf13/cobra"
 )
 
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
-}
-
-// createCmd represents the create command
-var createCmd = &cobra.Command{
-	Use:   "create",
-	Short: "create an app from a template with a SHA",
+var webCmd = &cobra.Command{
+	Use:   "web",
+	Short: "toggle the flutter web config",
 	Long:  `do it 4real`,
 	Args: func(cmd *cobra.Command, args []string) error {
-		/*
-			if err := validators.CreateCommandArgsValidation(args); err != nil {
-				return err
-			}
-			return nil
-		*/
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		ctx := contexts.NewContext("createContext")
-		ctx.GetValue["SHA"] = args[0]
-		if contains(args, "web") {
-			ctx.GetValue["WEB"] = "enabled"
+		if args[0] == "enable" {
+			websupport.ToggleWebIntegration(true)
+		} else if args[0] == "disable" {
+			websupport.ToggleWebIntegration(false)
 		} else {
-			ctx.GetValue["WEB"] = "disabled"
-		}
-		createapp.CreateApp(ctx)
-		if contains(args, "run") {
-			flutter.Run(ctx)
+			websupport.ToggleWebIntegration(false)
 		}
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(createCmd)
+	rootCmd.AddCommand(webCmd)
 }

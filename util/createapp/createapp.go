@@ -6,6 +6,7 @@ import (
 	"creator/util/gettemplate"
 	"creator/util/handledartfiles"
 	"creator/util/unzip"
+	"creator/util/websupport"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -73,9 +74,21 @@ func CreateApp(ctx *contexts.Context) {
 
 	ctx.GetValue["APPNAME"] = getAppNameAsInput()
 
+	fmt.Println("The name of your newest project is: " + ctx.GetValue["APPNAME"] + "..")
+
+	if ctx.GetValue["WEB"] == "enabled" {
+		websupport.ToggleWebIntegration(true)
+	} else if ctx.GetValue["WEB"] == "disabled" {
+		websupport.ToggleWebIntegration(false)
+	}
+
+	fmt.Println("Creating project..")
+
 	executeFlutterCreate(ctx)
+
+	fmt.Println("Fetching template data..")
 
 	getTemplate(ctx)
 
-	fmt.Println("Flutter project has been created in a clean way!")
+	fmt.Println("Flutter project has been created in a cleaner way!")
 }

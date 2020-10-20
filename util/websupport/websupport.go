@@ -1,9 +1,8 @@
 package websupport
 
 import (
-	"creator/util/contexts"
+	"fmt"
 	"log"
-	"os"
 	"os/exec"
 )
 
@@ -13,25 +12,17 @@ func check(err error) {
 	}
 }
 
-//Enables chrome support for the project
-func EnableWeb(ctx *contexts.Context) {
-	appName := ctx.GetValue["APPNAME"]
+//Toggles web support for the project
+func ToggleWebIntegration(x bool) {
 
-	err := os.Chdir(appName)
-	check(err)
+	if x {
+		err := exec.Command("flutter", "config", "--enable-web").Run()
+		check(err)
+		fmt.Println("Web support has been enabled..")
+	} else {
+		err := exec.Command("flutter", "config", "--no-enable-web").Run()
+		check(err)
+		fmt.Println("Web support has been disabled..")
+	}
 
-	err = exec.Command("flutter", "channel", "beta").Run()
-	check(err)
-
-	err = exec.Command("flutter", "upgrade").Run()
-	check(err)
-
-	err = exec.Command("flutter", "config", "--enable-web").Run()
-	check(err)
-}
-
-//Disables web support for the project
-func DisableWeb() {
-	err := exec.Command("flutter", "config", "--no-enable-web").Run()
-	check(err)
 }
