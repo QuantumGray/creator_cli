@@ -33,7 +33,7 @@ func parseFile(dest, appName string) error {
 	return nil
 }
 
-//Detects all '.dart' files in root
+//Detects all .dart or .dummy files  from root tree
 func ScanForFiles(ctx *contexts.Context, root string) {
 	appName := ctx.GetValue["APPNAME"]
 

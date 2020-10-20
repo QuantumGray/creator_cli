@@ -44,16 +44,19 @@ func getAppNameAsInput() string {
 func getTemplate(ctx *contexts.Context) {
 	arg := ctx.GetValue["SHA"]
 
-	url := "https://github.com/ben-fornefeld/" + arg + "/archive/main.zip"
-	gettemplate.DownloadFile(fmt.Sprintf("fc_t_%v.zip", arg), url) //Downloads file from that url
-
 	ex, err := os.Executable()
 	check(err)
 	exPath := filepath.Dir(ex)
 	ctx.GetValue["EXPATH"] = exPath
 
-	unzip.Unzip(fmt.Sprintf("fc_t_%v.zip", arg), exPath+"/../cache") //Unzips the file to the "cache" folder
-	os.Remove(fmt.Sprintf("fc_t_%v.zip", arg))
+	if !isTempCached(ctx) {
+		fmt.Println("Downloading template..")
+		url := "https://github.com/ben-fornefeld/" + arg + "/archive/main.zip"
+		gettemplate.DownloadFile(fmt.Sprintf("fc_t_%v.zip", arg), url)   //Downloads file from that url
+		unzip.Unzip(fmt.Sprintf("fc_t_%v.zip", arg), exPath+"/../cache") //Unzips the file to the "cache" folder
+		os.Rename(exPath+"/../cache/"+arg+"-main/", exPath+"/../cache/"+arg+"/")
+		os.Remove(fmt.Sprintf("fc_t_%v.zip", arg))
+	}
 	copyCacheToProject(ctx)
 }
 
@@ -62,10 +65,25 @@ func copyCacheToProject(ctx *contexts.Context) {
 	appName := ctx.GetValue["APPNAME"]
 	path := ctx.GetValue["EXPATH"]
 
-	err := copy.CopyDir(path+"/../cache/"+arg+"-main/", appName)
+	err := copy.CopyDir(path+"/../cache/"+arg+"/", appName)
 	check(err)
 	//handledartfiles.ParseFile(appName+"/lib/main.dart", appName)
 	handledartfiles.ScanForFiles(ctx, appName+"/lib")
+}
+
+func isTempCached(ctx *contexts.Context) bool {
+	exPath := ctx.GetValue["EXPATH"]
+	hash := ctx.GetValue["SHA"]
+
+	files, err := ioutil.ReadDir(exPath + "/../cache")
+	check(err)
+
+	for _, f := range files {
+		if strings.Contains(f.Name(), hash) {
+			return true
+		}
+	}
+	return false
 }
 
 // CreateApp : parent function to delegate creator functions
@@ -74,15 +92,13 @@ func CreateApp(ctx *contexts.Context) {
 
 	ctx.GetValue["APPNAME"] = getAppNameAsInput()
 
-	fmt.Println("The name of your newest project is: " + ctx.GetValue["APPNAME"] + "..")
-
 	if ctx.GetValue["WEB"] == "enabled" {
 		websupport.ToggleWebIntegration(true)
 	} else if ctx.GetValue["WEB"] == "disabled" {
 		websupport.ToggleWebIntegration(false)
 	}
 
-	fmt.Println("Creating project..")
+	fmt.Println("Creating project " + ctx.GetValue["APPNAME"] + "..")
 
 	executeFlutterCreate(ctx)
 
