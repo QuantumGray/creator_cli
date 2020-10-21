@@ -17,7 +17,7 @@ func check(err error) {
 	}
 }
 
-//Updates a specific template
+//UpdateTemplate updates a specific template
 func UpdateTemplate(arg string) error {
 	ex, err := os.Executable()
 	check(err)
